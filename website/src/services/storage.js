@@ -10,6 +10,7 @@ const HISTORY_KEY = 'maya_playback_history_v1';
 export const WatchlistService = {
   getWatchlist() {
     try {
+      if (typeof localStorage === 'undefined') return [];
       const raw = localStorage.getItem(WATCHLIST_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch {
@@ -40,12 +41,16 @@ export const WatchlistService = {
         description: movie.description || '',
         added_at: Date.now(),
       });
-      try {
-        localStorage.setItem(WATCHLIST_KEY, JSON.stringify(list));
-      } catch (e) {
-        console.warn('Storage quota exceeded', e);
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem(WATCHLIST_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.warn('Storage quota exceeded', e);
+        }
       }
-      window.dispatchEvent(new CustomEvent('maya:watchlist_updated', { detail: { movie, action: 'add' } }));
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('maya:watchlist_updated', { detail: { movie, action: 'add' } }));
+      }
     }
   },
 
@@ -53,12 +58,16 @@ export const WatchlistService = {
     let list = this.getWatchlist();
     const targetId = String(movieId);
     list = list.filter(m => String(m.tmdb_id || m.id) !== targetId);
-    try {
-      localStorage.setItem(WATCHLIST_KEY, JSON.stringify(list));
-    } catch (e) {
-      console.warn('Storage error', e);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(WATCHLIST_KEY, JSON.stringify(list));
+      } catch (e) {
+        console.warn('Storage error', e);
+      }
     }
-    window.dispatchEvent(new CustomEvent('maya:watchlist_updated', { detail: { movieId, action: 'remove' } }));
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('maya:watchlist_updated', { detail: { movieId, action: 'remove' } }));
+    }
   },
 
   toggleWatchlist(movie) {
@@ -77,6 +86,7 @@ export const WatchlistService = {
 export const HistoryService = {
   getHistoryMap() {
     try {
+      if (typeof localStorage === 'undefined') return {};
       const raw = localStorage.getItem(HISTORY_KEY);
       return raw ? JSON.parse(raw) : {};
     } catch {
@@ -108,12 +118,16 @@ export const HistoryService = {
       lastWatched: Date.now(),
     };
 
-    try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(map));
-    } catch (e) {
-      console.warn('Storage quota exceeded', e);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(map));
+      } catch (e) {
+        console.warn('Storage quota exceeded', e);
+      }
     }
-    window.dispatchEvent(new CustomEvent('maya:history_updated', { detail: { movieId, progress: map[id] } }));
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('maya:history_updated', { detail: { movieId, progress: map[id] } }));
+    }
   },
 
   getContinueWatching() {
@@ -126,11 +140,15 @@ export const HistoryService = {
   clearProgress(movieId) {
     const map = this.getHistoryMap();
     delete map[String(movieId)];
-    try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(map));
-    } catch (e) {
-      console.warn('Storage error', e);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(map));
+      } catch (e) {
+        console.warn('Storage error', e);
+      }
     }
-    window.dispatchEvent(new CustomEvent('maya:history_updated', { detail: { movieId, cleared: true } }));
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('maya:history_updated', { detail: { movieId, cleared: true } }));
+    }
   }
 };

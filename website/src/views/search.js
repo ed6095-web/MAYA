@@ -146,12 +146,11 @@ export const SearchView = {
     `;
 
     try {
-      const res = await CatalogueService.getMovies({
-        search: this.currentQuery,
-        genre: this.selectedGenre,
-        sortBy: this.selectedSort,
-        pageSize: 40,
-      });
+      const res = await CatalogueService.searchCatalogue(
+        this.currentQuery,
+        this.selectedGenre,
+        this.selectedSort
+      );
 
       const movies = res.movies || [];
       const totalCount = res.total_count || movies.length;

@@ -47,20 +47,11 @@ export const DetailsView = {
       // Update document title for SEO
       router.updateTitle(`${movie.title} (${movie.release_year || ''})`);
 
-      // Check for authorized playback source
-      const hasPlayback = await PlaybackService.hasAuthorizedPlayback(movie);
-      const sources = await PlaybackService.getPlaybackSources(movie);
-      const inWatchlist = WatchlistService.isInWatchlist(movieId);
+        // Fetch playability status and related movies
+        const status = await PlaybackService.getPlayabilityStatus(movie);
+        const relatedMovies = await CatalogueService.getRelatedMovies(movie, 6);
 
-      const backdropUrl = movie.backdrop || movie.poster;
-      const posterUrl = movie.poster || movie.backdrop;
-      const rating = typeof movie.rating === 'number' ? movie.rating.toFixed(1) : (movie.rating || '');
-      const year = movie.release_year || '';
-      const genres = Array.isArray(movie.genres) ? movie.genres : [];
-      const languages = Array.isArray(movie.languages) ? movie.languages.join(', ').toUpperCase() : (movie.languages || '');
-      const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : '';
-
-      container.innerHTML = `
+        container.innerHTML = `
         <div class="movie-details-page">
           
           <!-- Atmospheric Backdrop Header -->
@@ -94,6 +85,7 @@ export const DetailsView = {
                 <div class="details-tag-row">
                   <span class="details-badge-identity">MAYA CINEMA</span>
                   ${movie.rip ? `<span class="details-badge-quality">${movie.rip}</span>` : ''}
+                  ${status.isPlayable ? '<span class="details-badge-verified">AUTHORIZED STREAM ✓</span>' : '<span class="details-badge-catonly">CATALOGUE ONLY</span>'}
                 </div>
 
                 <h1 class="details-movie-title">${movie.title}</h1>
@@ -120,41 +112,77 @@ export const DetailsView = {
                 <!-- Playback & Source Availability Info -->
                 <div class="playback-availability-card">
                   <div class="avail-header">
-                    <span class="avail-indicator ${hasPlayback ? 'avail-live' : 'avail-pending'}"></span>
-                    <span class="avail-title">
-                      ${hasPlayback ? 'AUTHORIZED STREAM READY' : 'CATALOGUE METADATA ONLY'}
-                    </span>
+                    <span class="avail-indicator ${status.badgeClass}"></span>
+                    <span class="avail-title">${status.statusText}</span>
                   </div>
-                  <p class="avail-note">
-                    ${hasPlayback ? 
-                      `Verified high-definition playback source available (${sources.map(s => s.quality).join(', ')}).` :
-                      'Streaming source is pending licensing authorization. You can save this title to your watchlist to track updates.'
-                    }
-                  </p>
+                  <p class="avail-note">${status.note}</p>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- Action Buttons Row -->
                 <div class="details-actions-row">
-                  ${hasPlayback ? `
+                  ${status.isPlayable ? `
                     <a href="/watch/${movieId}" class="btn-details-play" aria-label="Play ${movie.title} in MAYA player">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                       <span>PLAY NOW</span>
                     </a>
-                  ` : ''}
+                  ` : `
+                    <button class="btn-details-unavailable" disabled aria-label="Web playback is not available for this title">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                      </svg>
+                      <span>PLAYBACK UNAVAILABLE</span>
+                    </button>
+                  `}
 
                   <button class="btn-details-watchlist js-details-watchlist-btn" data-movie-id="${movieId}" aria-label="Toggle Watchlist">
                     <span class="watchlist-status-icon">${inWatchlist ? '✓' : '+'}</span>
                     <span class="watchlist-status-text">${inWatchlist ? 'IN WATCHLIST' : 'ADD TO WATCHLIST'}</span>
                   </button>
 
-                  <a href="/browse" class="btn-details-browse" aria-label="Browse more titles">
-                    <span>EXPLORE MORE</span>
-                  </a>
+                  <button class="btn-details-apk js-download-btn" aria-label="Download MAYA APK for Android">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>GET ANDROID APP</span>
+                  </button>
                 </div>
 
               </div>
 
             </div>
+
+            <!-- More Like This (Related Movies Shelf) -->
+            ${relatedMovies.length > 0 ? `
+              <div class="related-shelf-wrap">
+                <div class="shelf-header">
+                  <span class="shelf-tag">[ SIMILAR TITLES ]</span>
+                  <h2 class="shelf-title">MORE LIKE THIS</h2>
+                </div>
+                <div class="shelf-scroller">
+                  <div class="shelf-track">
+                    ${relatedMovies.map(rel => `
+                      <article class="movie-card" data-movie-id="${rel.tmdb_id || rel.id}" tabindex="0">
+                        <div class="card-poster-frame">
+                          <img src="${rel.poster || '/assets/maya/app_home.png'}" alt="${rel.title}" class="card-poster-img" loading="lazy">
+                          <div class="card-hover-overlay">
+                            <div class="overlay-bottom">
+                              <a href="/movie/${rel.tmdb_id || rel.id}" class="card-quick-btn">DETAILS &rarr;</a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-caption">
+                          <h3 class="card-title">${rel.title}</h3>
+                          <div class="card-meta">
+                            ${rel.release_year ? `<span>${rel.release_year}</span>` : ''}
+                            ${rel.rating ? `<span>&bull; ★ ${typeof rel.rating === 'number' ? rel.rating.toFixed(1) : rel.rating}</span>` : ''}
+                          </div>
+                        </div>
+                      </article>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
           </div>
 
         </div>

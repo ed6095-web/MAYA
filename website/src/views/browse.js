@@ -459,7 +459,7 @@ export const BrowseView = {
    * Genre View (/genre/:genre)
    */
   async _renderGenreView(genre) {
-    const data = await CatalogueService.getMovies({ genre, pageSize: 36 });
+    const data = await CatalogueService.searchCatalogue('', genre, 'rating:desc');
     const movies = data.movies;
 
     return `
