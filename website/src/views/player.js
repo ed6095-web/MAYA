@@ -105,14 +105,26 @@ export const PlayerView = {
           <div class="cinema-player-shell">
             <div class="cinema-aspect-ratio-box" id="player-wrapper">
               
-              <!-- Video Element -->
+              <!-- Video Element for Direct Streams -->
               <video 
                 id="maya-video-element" 
                 class="maya-video-element" 
                 playsinline 
                 preload="metadata"
-                src="${activeSource.playbackUrl}">
+                ${!activeSource.isEmbed ? `src="${activeSource.playbackUrl}"` : ''}
+                ${activeSource.isEmbed ? 'style="display:none;"' : ''}>
               </video>
+
+              <!-- Iframe for Universal Cinema Embed Streams -->
+              <iframe
+                id="maya-embed-iframe"
+                class="maya-embed-iframe"
+                ${activeSource.isEmbed ? `src="${activeSource.playbackUrl}"` : ''}
+                ${!activeSource.isEmbed ? 'style="display:none;"' : ''}
+                allowfullscreen
+                allow="autoplay; encrypted-media; picture-in-picture"
+                referrerpolicy="no-referrer">
+              </iframe>
 
               <!-- Center Buffering Spinner -->
               <div class="player-center-spinner" id="player-spinner" hidden>
@@ -291,14 +303,24 @@ export const PlayerView = {
               </div>
               <div class="watch-info-actions">
                 <a href="/movie/${movieId}" class="btn-watch-action">&larr; Full Details</a>
-                <a href="#download-apk" class="btn-watch-action-gold">&#8681; Get Android App</a>
+                <button class="btn-watch-action-gold js-download-btn" aria-label="Download Android App">&#8681; Get Android App</button>
               </div>
             </div>
 
-            ${this.movie.synopsis ? `<p class="watch-synopsis">${this.movie.synopsis}</p>` : ''}
+            ${this.movie.synopsis || this.movie.description ? `<p class="watch-synopsis">${this.movie.synopsis || this.movie.description}</p>` : ''}
 
             <div class="watch-genres-row">
               ${(this.movie.genres || []).map(g => `<span class="genre-tag">${g}</span>`).join('')}
+            </div>
+
+            <!-- Stream Server Selector Row -->
+            <div class="stream-servers-row">
+              <span class="stream-server-label">STREAM SOURCE:</span>
+              ${this.sources.map((src, i) => `
+                <button class="server-chip-btn ${i === 0 ? 'is-active' : ''}" data-server-idx="${i}">
+                  ${src.quality}
+                </button>
+              `).join('')}
             </div>
           </div>
 
@@ -357,6 +379,7 @@ export const PlayerView = {
 
   _initPlayerLogic(container, movieId, previousProgress) {
     const video = container.querySelector('#maya-video-element');
+    const iframe = container.querySelector('#maya-embed-iframe');
     const wrapper = container.querySelector('#player-wrapper');
     const hud = container.querySelector('#player-hud');
     const playPauseBtn = container.querySelector('#ctrl-play-pause');
@@ -386,6 +409,85 @@ export const PlayerView = {
     const resumeBanner = container.querySelector('#resume-banner');
 
     this.videoEl = video;
+
+    const switchSource = (idx) => {
+      if (!this.sources[idx]) return;
+      this.currentSourceIndex = idx;
+      const src = this.sources[idx];
+      const currentTime = video ? (video.currentTime || 0) : 0;
+
+      // Update quality label in HUD
+      const labelEl = container.querySelector('#quality-label');
+      if (labelEl) labelEl.textContent = src.quality;
+
+      // Update stream server chips
+      container.querySelectorAll('.server-chip-btn').forEach((btn) => {
+        const btnIdx = parseInt(btn.getAttribute('data-server-idx'), 10);
+        btn.classList.toggle('is-active', btnIdx === idx);
+      });
+
+      // Update quality menu active item
+      if (qualityMenu) {
+        qualityMenu.querySelectorAll('.hud-menu-item').forEach((it) => {
+          const itIdx = parseInt(it.getAttribute('data-source-index'), 10);
+          it.classList.toggle('is-active', itIdx === idx);
+        });
+      }
+
+      if (src.isEmbed) {
+        // Switch to cinema embed iframe
+        if (video) {
+          video.pause();
+          video.style.display = 'none';
+        }
+        if (iframe) {
+          iframe.src = src.playbackUrl;
+          iframe.style.display = 'block';
+        }
+        if (hud) hud.style.display = 'none';
+        if (centerPlayBtn) centerPlayBtn.style.display = 'none';
+        if (spinner) spinner.hidden = true;
+      } else {
+        // Direct Video Mode (with MAYA HUD)
+        if (iframe) {
+          iframe.src = '';
+          iframe.style.display = 'none';
+        }
+        if (video) {
+          video.style.display = 'block';
+          video.src = src.playbackUrl;
+          if (currentTime > 0) video.currentTime = currentTime;
+          video.play().catch(() => {});
+        }
+        if (hud) hud.style.display = 'flex';
+        if (centerPlayBtn) centerPlayBtn.style.display = 'flex';
+      }
+    };
+
+    // Stream Server Chip Buttons
+    container.querySelectorAll('.server-chip-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-server-idx'), 10);
+        switchSource(idx);
+      });
+    });
+
+    // Auto-failover on direct video playback error
+    if (video) {
+      video.addEventListener('error', (err) => {
+        console.warn('Playback error on direct stream, auto-switching to backup cinema server:', err);
+        const nextIdx = this.sources.findIndex((s, i) => (i > this.currentSourceIndex && s.isEmbed) || s.isEmbed);
+        if (nextIdx !== -1 && nextIdx !== this.currentSourceIndex) {
+          switchSource(nextIdx);
+        }
+      });
+    }
+
+    // Check if initial source is embed
+    if (this.sources[0] && this.sources[0].isEmbed) {
+      switchSource(0);
+    }
 
     // 1. Play / Pause Logic
     const togglePlay = () => {
@@ -598,21 +700,8 @@ export const PlayerView = {
         item.addEventListener('click', (e) => {
           e.stopPropagation();
           const idx = parseInt(item.getAttribute('data-source-index'), 10);
-          if (this.sources[idx]) {
-            const currentTime = video.currentTime;
-            const wasPlaying = !video.paused;
-            this.currentSourceIndex = idx;
-            video.src = this.sources[idx].playbackUrl;
-            video.currentTime = currentTime;
-            if (wasPlaying) video.play();
-
-            const labelEl = container.querySelector('#quality-label');
-            if (labelEl) labelEl.textContent = this.sources[idx].quality;
-
-            items.forEach(it => it.classList.remove('is-active'));
-            item.classList.add('is-active');
-            qualityMenu.hidden = true;
-          }
+          switchSource(idx);
+          qualityMenu.hidden = true;
         });
       });
     }

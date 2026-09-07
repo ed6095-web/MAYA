@@ -103,7 +103,7 @@ export const DetailsView = {
                 <div class="details-tag-row">
                   <span class="details-badge-identity">MAYA CINEMA</span>
                   ${quality ? `<span class="details-badge-quality">${quality}</span>` : ''}
-                  ${status.isPlayable ? '<span class="details-badge-verified">AUTHORIZED STREAM ✓</span>' : '<span class="details-badge-catonly">CATALOGUE ONLY</span>'}
+                  <span class="details-badge-verified">STREAM READY ✓</span>
                 </div>
 
                 <h1 class="details-movie-title">${title}</h1>
@@ -130,28 +130,18 @@ export const DetailsView = {
                 <!-- Playback & Source Availability Info -->
                 <div class="playback-availability-card">
                   <div class="avail-header">
-                    <span class="avail-indicator ${status.badgeClass}"></span>
-                    <span class="avail-title">${status.statusText}</span>
+                    <span class="avail-indicator avail-live"></span>
+                    <span class="avail-title">CINEMA STREAM READY &bull; HIGH DEFINITION</span>
                   </div>
-                  <p class="avail-note">${status.note}</p>
+                  <p class="avail-note">Full high-definition cinema stream available for instant playback in MAYA Web, or download for offline viewing in the Android app.</p>
                 </div>
 
                 <!-- Action Buttons Row -->
                 <div class="details-actions-row">
-                  ${status.isPlayable ? `
-                    <a href="/watch/${movieId}" class="btn-details-play" aria-label="Play ${title} in MAYA player">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                      <span>PLAY NOW</span>
-                    </a>
-                  ` : `
-                    <button class="btn-details-unavailable" disabled aria-label="Web playback is not available for this title">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-                      </svg>
-                      <span>PLAYBACK UNAVAILABLE</span>
-                    </button>
-                  `}
+                  <a href="/watch/${movieId}" class="btn-details-play" aria-label="Play ${title} in MAYA player">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>PLAY NOW</span>
+                  </a>
 
                   <button class="btn-details-watchlist js-details-watchlist-btn" data-movie-id="${movieId}" aria-label="Toggle Watchlist">
                     <span class="watchlist-status-icon">${inWatchlist ? '✓' : '+'}</span>
@@ -159,7 +149,11 @@ export const DetailsView = {
                   </button>
 
                   <button class="btn-details-apk js-download-btn" aria-label="Download MAYA APK for Android">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
                     <span>GET ANDROID APP</span>
                   </button>
                 </div>

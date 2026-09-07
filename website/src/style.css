@@ -4223,6 +4223,17 @@ body::before {
   border-radius: var(--radius-sm);
 }
 
+.details-badge-verified {
+  font-family: var(--font-pixel);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
 .details-movie-title {
   font-family: var(--font-display);
   font-size: clamp(2rem, 4.5vw, 3.2rem);
@@ -4389,6 +4400,35 @@ body::before {
   color: var(--maya-amber-start);
 }
 
+.btn-details-apk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: var(--maya-amber-start);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 15px 28px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-details-apk:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--maya-amber-start);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+}
+
+.btn-details-apk svg {
+  stroke: currentColor;
+}
+
 /* ==========================================================================
    CINEMA WATCH PAGE & VIDEO PLAYER HUD (/watch/:id)
    ========================================================================== */
@@ -4499,12 +4539,14 @@ body::before {
   border-radius: 0 !important;
 }
 
-.maya-video-element {
+.maya-video-element,
+.maya-embed-iframe {
   width: 100%;
   height: 100%;
   object-fit: contain;
   background-color: #000000;
   cursor: pointer;
+  border: none;
 }
 
 /* Loading & Buffering Stages */
@@ -5051,6 +5093,50 @@ body::before {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.stream-servers-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stream-server-label {
+  font-family: var(--font-pixel);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.server-chip-btn {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.server-chip-btn:hover {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: var(--maya-amber-start);
+  color: #FFFFFF;
+}
+
+.server-chip-btn.is-active {
+  background: var(--maya-amber-gradient);
+  border-color: transparent;
+  color: #000000;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
 }
 
 /* Related Movies Shelf */
