@@ -8,6 +8,11 @@
 
 import { CONFIG } from './config.js';
 import QRCode from 'qrcode';
+import { Router } from './router.js';
+import { BrowseView } from './views/browse.js';
+import { DetailsView } from './views/details.js';
+import { PlayerView } from './views/player.js';
+import { SearchView } from './views/search.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Unified App Showcase Interactive Switcher
@@ -48,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (yearEl) {
     yearEl.textContent = CONFIG.COPYRIGHT_YEAR.toString();
   }
+
+  // 13. Client SPA Router for Online Cinema Platform
+  initAppRouter();
 });
 
 /**
@@ -157,45 +165,44 @@ function initPhoneTilt() {
  * Direct APK Download with visual loading feedback and double-click debounce
  */
 function initDownloadButtons() {
-  const downloadButtons = document.querySelectorAll('.js-download-btn');
   let isDownloading = false;
 
-  downloadButtons.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.js-download-btn');
+    if (!btn) return;
+    e.preventDefault();
 
-      if (isDownloading) return;
-      isDownloading = true;
+    if (isDownloading) return;
+    isDownloading = true;
 
-      const textSpan = btn.querySelector('.cta-text');
-      const originalText = textSpan ? textSpan.textContent : 'DOWNLOAD';
+    const textSpan = btn.querySelector('.cta-text') || btn.querySelector('.btn-content span:last-child') || btn.querySelector('.apk-btn-text');
+    const originalText = textSpan ? textSpan.textContent : 'DOWNLOAD';
 
-      btn.classList.add('is-loading');
-      btn.setAttribute('disabled', 'true');
-      btn.setAttribute('aria-busy', 'true');
+    btn.classList.add('is-loading');
+    btn.setAttribute('disabled', 'true');
+    btn.setAttribute('aria-busy', 'true');
+    if (textSpan) {
+      textSpan.textContent = 'DOWNLOADING...';
+    }
+
+    // Direct APK download execution
+    const downloadLink = document.createElement('a');
+    downloadLink.href = CONFIG.APP_DOWNLOAD_URL;
+    downloadLink.download = CONFIG.DOWNLOAD_FILENAME;
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    setTimeout(() => {
+      btn.classList.remove('is-loading');
+      btn.removeAttribute('disabled');
+      btn.removeAttribute('aria-busy');
       if (textSpan) {
-        textSpan.textContent = 'STARTING DOWNLOAD...';
+        textSpan.textContent = originalText;
       }
-
-      // Direct APK download execution
-      const downloadLink = document.createElement('a');
-      downloadLink.href = CONFIG.APP_DOWNLOAD_URL;
-      downloadLink.download = CONFIG.DOWNLOAD_FILENAME;
-      downloadLink.style.display = 'none';
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-
-      setTimeout(() => {
-        btn.classList.remove('is-loading');
-        btn.removeAttribute('disabled');
-        btn.removeAttribute('aria-busy');
-        if (textSpan) {
-          textSpan.textContent = originalText;
-        }
-        isDownloading = false;
-      }, 3000);
-    });
+      isDownloading = false;
+    }, 3000);
   });
 }
 
@@ -609,4 +616,149 @@ function initScrollReveals() {
   });
 
   revealElements.forEach(el => observer.observe(el));
+}
+
+/**
+ * 13. Client SPA Router for Online Cinema Platform
+ * Routes: /, /browse, /genre/:genre, /watchlist, /history, /movie/:id, /watch/:id, /search
+ */
+function initAppRouter() {
+  const landingView = document.getElementById('landing-view');
+  const browseView = document.getElementById('browse-view');
+  const detailsView = document.getElementById('details-view');
+  const playerView = document.getElementById('player-view');
+  const searchView = document.getElementById('search-view');
+  const curtain = document.getElementById('transition-curtain');
+
+  const allViews = [
+    { id: 'landing-view', el: landingView },
+    { id: 'browse-view', el: browseView },
+    { id: 'details-view', el: detailsView },
+    { id: 'player-view', el: playerView },
+    { id: 'search-view', el: searchView },
+  ];
+
+  let isFirstLoad = true;
+
+  const showCurtain = () => {
+    if (curtain) {
+      curtain.classList.add('is-active');
+      curtain.removeAttribute('aria-hidden');
+    }
+  };
+
+  const hideCurtain = (delay = 200) => {
+    if (curtain) {
+      setTimeout(() => {
+        curtain.classList.remove('is-active');
+        curtain.setAttribute('aria-hidden', 'true');
+      }, delay);
+    }
+  };
+
+  const activateView = (targetViewId) => {
+    allViews.forEach(({ id, el }) => {
+      if (!el) return;
+      if (id === targetViewId) {
+        el.hidden = false;
+        el.classList.add('is-active');
+      } else {
+        el.hidden = true;
+        el.classList.remove('is-active');
+      }
+    });
+  };
+
+  const router = new Router(
+    {
+      '/': () => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('landing-view');
+        router.updateTitle('');
+        hideCurtain(isFirstLoad ? 0 : 250);
+        isFirstLoad = false;
+      },
+
+      '/browse': async ({ query }) => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('browse-view');
+        await BrowseView.render({ route: '/browse', query, router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+
+      '/genre/:genre': async ({ params, query }) => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('browse-view');
+        await BrowseView.render({ route: `/genre/${params.genre}`, params, query, router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+
+      '/watchlist': async ({ query }) => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('browse-view');
+        await BrowseView.render({ route: '/watchlist', query, router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+
+      '/history': async ({ query }) => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('browse-view');
+        await BrowseView.render({ route: '/history', query, router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+
+      '/movie/:id': async ({ params }) => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('details-view');
+        await DetailsView.render({ params, router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+
+      '/watch/:id': async ({ params }) => {
+        if (!isFirstLoad) showCurtain();
+        activateView('player-view');
+        await PlayerView.render({ params, router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+
+      '/search': async ({ query }) => {
+        if (!isFirstLoad) showCurtain();
+        if (PlayerView && typeof PlayerView._cleanup === 'function') {
+          PlayerView._cleanup();
+        }
+        activateView('search-view');
+        await SearchView.render({ router });
+        hideCurtain(250);
+        isFirstLoad = false;
+      },
+    }
+  );
+
+  // Initial route resolution
+  router.resolve();
+  return router;
 }

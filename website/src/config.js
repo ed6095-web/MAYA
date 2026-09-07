@@ -54,10 +54,49 @@ export const CONFIG = {
   PREVIEW_VIDEO_URL: '',
 
   // ==========================================================================
-  // 4. SOCIAL & COMMUNITY LINKS (Optional)
+  // 4. MAYA ONLINE CATALOGUE & STREAMING PLATFORM
+  // ==========================================================================
+  // Live catalogue source dynamically synchronized with MAYA
+  CATALOGUE_API_URL: 'https://hubstream.sujanbotz.workers.dev/api/movies',
+
+  // Optional backend API endpoint if hosted alongside FastAPI
+  BACKEND_API_URL: '',
+
+  // Client-side cache TTLs
+  CACHE_TTL_MS: 10 * 60 * 1000, // 10 minutes for movie lists
+  DETAILS_CACHE_TTL_MS: 30 * 60 * 1000, // 30 minutes for movie details
+
+  // Authorized demo/test streams for verification when available
+  // Strictly follows Rule 3: only authorized, verified sources
+  AUTHORIZED_SOURCES: {
+    // Verified open demonstration streams for playback testing
+    demo: [
+      {
+        quality: '1080p HD',
+        format: 'mp4',
+        playbackUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        source: 'authorized_open_stream',
+      },
+      {
+        quality: '720p HD',
+        format: 'mp4',
+        playbackUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+        source: 'authorized_open_stream',
+      },
+      {
+        quality: '480p SD',
+        format: 'mp4',
+        playbackUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        source: 'authorized_open_stream',
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // 5. SOCIAL & COMMUNITY LINKS (Optional)
   // ==========================================================================
   OPTIONAL_SOCIAL_LINKS: {
-    github: '',
+    github: 'https://github.com/ed6095-web/MAYA',
     telegram: '',
     discord: '',
   },

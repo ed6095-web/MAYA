@@ -21,12 +21,15 @@
   <div class="ambient-glow ambient-glow-top" aria-hidden="true"></div>
   <div class="ambient-glow ambient-glow-center" aria-hidden="true"></div>
 
+  <!-- Route Views Container -->
+  <div id="landing-view" class="app-route-view is-active">
+
   <!-- ==================================================================== -->
   <!-- 1. NAVIGATION                                                         -->
   <!-- ==================================================================== -->
   <header class="site-header" id="site-header" role="banner">
     <div class="nav-container">
-      <a href="#hero" class="brand-link" aria-label="MAYA Home">
+      <a href="/" class="brand-link" aria-label="MAYA Home" data-route="/">
         <div class="brand-logo-icon">
           <img src="/assets/maya/maya_eye.svg" alt="MAYA Eye brand symbol" width="34" height="20" class="eye-svg">
         </div>
@@ -37,8 +40,11 @@
       <nav class="desktop-nav" aria-label="Main site navigation">
         <a href="#about" class="nav-link">ABOUT</a>
         <a href="#showcase" class="nav-link">EXPERIENCE</a>
-        <a href="#showcase" class="nav-link">SHOWCASE</a>
         <a href="#features" class="nav-link">FEATURES</a>
+        <a href="/browse" class="nav-link nav-link-online" data-route="/browse">
+          <span class="online-indicator-dot"></span>
+          <span>VIEW ONLINE</span>
+        </a>
       </nav>
 
       <div class="nav-actions">
@@ -76,6 +82,10 @@
         </div>
 
         <nav class="mobile-nav-links" aria-label="Mobile navigation menu">
+          <a href="/browse" class="mobile-nav-link mobile-nav-highlight" data-route="/browse">
+            <span class="mobile-nav-num">▶</span>
+            <span class="mobile-nav-label text-highlight-amber">VIEW ONLINE (WEB APP)</span>
+          </a>
           <a href="#about" class="mobile-nav-link">
             <span class="mobile-nav-num">01</span>
             <span class="mobile-nav-label">ABOUT MAYA</span>
@@ -84,16 +94,12 @@
             <span class="mobile-nav-num">02</span>
             <span class="mobile-nav-label">EXPERIENCE</span>
           </a>
-          <a href="#showcase" class="mobile-nav-link">
-            <span class="mobile-nav-num">03</span>
-            <span class="mobile-nav-label">SHOWCASE</span>
-          </a>
           <a href="#features" class="mobile-nav-link">
-            <span class="mobile-nav-num">04</span>
+            <span class="mobile-nav-num">03</span>
             <span class="mobile-nav-label">FEATURES</span>
           </a>
           <a href="#download" class="mobile-nav-link">
-            <span class="mobile-nav-num">05</span>
+            <span class="mobile-nav-num">04</span>
             <span class="mobile-nav-label">DOWNLOAD APK</span>
           </a>
         </nav>
@@ -162,6 +168,16 @@
                 <span class="cta-text">DOWNLOAD MAYA</span>
               </span>
             </button>
+
+            <!-- VIEW ONLINE Button -->
+            <a href="/browse" class="btn-view-online" id="hero-view-online-btn" data-route="/browse" aria-label="Open MAYA Web Cinema in your browser">
+              <span class="btn-content">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                <span>VIEW ONLINE</span>
+              </span>
+            </a>
 
             <!-- Desktop QR Code (Strictly hidden on mobile) -->
             <div class="desktop-phone-download" id="desktop-qr-container">
@@ -700,16 +716,17 @@
             <img src="/assets/maya/maya_eye.svg" alt="MAYA Eye brand symbol" width="70" height="42">
           </div>
 
+          <span class="section-tag">[ TWO WAYS TO EXPERIENCE MAYA ]</span>
           <h2 class="final-cta-title" id="final-cta-title-id">
-            READY FOR MAYA?
+            YOUR SCREEN.<br><span class="text-highlight-amber">YOUR CHOICE.</span>
           </h2>
 
           <p class="final-cta-subtitle">
-            Get the official application directly on your device. No registration hoops, no ads, no wait.
+            Experience MAYA in your browser with full discovery and playback, or install the native Android application for direct hardware acceleration.
           </p>
 
-          <!-- Final Amber/Gold Download Button (#F59E0B -> #D97706) -->
-          <div class="final-btn-group">
+          <!-- Final Dual Actions: Download APK + View Online -->
+          <div class="final-btn-group dual-cta-group">
             <button class="btn-download-primary btn-large js-download-btn" id="final-download-btn" aria-label="Download MAYA APK for Android">
               <span class="btn-spinner" aria-hidden="true"></span>
               <span class="btn-content">
@@ -721,6 +738,15 @@
                 <span class="cta-text">DOWNLOAD MAYA</span>
               </span>
             </button>
+
+            <a href="/browse" class="btn-view-online btn-large" data-route="/browse" aria-label="Open MAYA Web Cinema in your browser">
+              <span class="btn-content">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                <span class="cta-text">VIEW ONLINE</span>
+              </span>
+            </a>
           </div>
 
           <!-- Bottom Install Guide Link -->
@@ -869,6 +895,23 @@
 
     </div>
   </footer>
+
+  </div><!-- /#landing-view -->
+
+  <!-- App Route Containers for Online Platform -->
+  <div id="browse-view" class="app-route-view" hidden></div>
+  <div id="details-view" class="app-route-view" hidden></div>
+  <div id="player-view" class="app-route-view" hidden></div>
+  <div id="search-view" class="app-route-view" hidden></div>
+
+  <!-- Cinematic Route Transition Curtain -->
+  <div id="transition-curtain" class="transition-curtain" aria-hidden="true">
+    <div class="curtain-eye-box">
+      <img src="/assets/maya/maya_eye.svg" class="curtain-eye-pulse" alt="MAYA Loading" width="84" height="50">
+      <div class="curtain-glow" aria-hidden="true"></div>
+      <div class="curtain-tag">MAYA WEB</div>
+    </div>
+  </div>
 
   <script type="module" src="/src/main.js"></script>
 </body>
