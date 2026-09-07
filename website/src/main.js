@@ -247,6 +247,40 @@ function initSha256Verification() {
       }, 2400);
     }
   });
+
+  // Also wire up final CTA hash badge if present
+  const finalCodeEl = document.getElementById('final-sha256-code');
+  const finalCopyBtn = document.getElementById('copy-final-hash-btn');
+
+  if (finalCodeEl && actualHash) {
+    finalCodeEl.textContent = actualHash;
+    finalCodeEl.title = actualHash;
+  }
+
+  if (finalCopyBtn) {
+    finalCopyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(actualHash);
+        finalCopyBtn.textContent = 'COPIED ✓';
+        finalCopyBtn.classList.add('is-copied');
+        setTimeout(() => {
+          finalCopyBtn.textContent = 'COPY';
+          finalCopyBtn.classList.remove('is-copied');
+        }, 2200);
+      } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = actualHash;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        finalCopyBtn.textContent = 'COPIED ✓';
+        setTimeout(() => {
+          finalCopyBtn.textContent = 'COPY';
+        }, 2200);
+      }
+    });
+  }
 }
 
 /**

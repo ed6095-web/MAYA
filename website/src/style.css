@@ -1783,21 +1783,62 @@ body::before {
 
 .final-hash-area {
   display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 540px;
+  margin: 6px auto 14px auto;
+}
+
+.final-hash-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  gap: 10px;
+  background-color: #080808;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .hash-subhead {
   font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  white-space: nowrap;
   letter-spacing: 0.08em;
 }
 
 .hash-mini {
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+  user-select: all;
+}
+
+.btn-copy-hash-mini {
+  background-color: #141414;
+  border: 1px solid #282828;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-copy-hash-mini:hover {
+  background-color: #202020;
+  color: var(--maya-amber-start);
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
 .download-instruction-note {
@@ -2024,42 +2065,74 @@ body::before {
 }
 
 /* ==========================================================================
-   11. FOOTER
+   11. FOOTER (Centered with Big Low-Opacity Eye Watermark in Middle)
    ========================================================================== */
 .site-footer {
-  background-color: #030303;
+  background-color: #020202;
   border-top: 1px solid var(--border-subtle);
-  padding: 40px 0;
+  padding: 64px 0 44px 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.footer-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.footer-brand-side {
+.footer-centered-container {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  gap: 22px;
+}
+
+.footer-big-eye-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.footer-eye-glow {
+  position: absolute;
+  width: 180px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+.footer-big-eye-img {
+  width: clamp(140px, 32vw, 220px);
+  height: auto;
+  opacity: 0.16;
+  filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.25));
+  transition: opacity var(--transition-normal), transform var(--transition-normal), filter var(--transition-normal);
+}
+
+.footer-big-eye-link:hover .footer-big-eye-img,
+.footer-big-eye-link:focus-visible .footer-big-eye-img {
+  opacity: 0.4;
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.55));
+}
+
+.footer-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .footer-tagline {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.footer-meta-side {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
 }
 
 .footer-status-indicator {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   font-family: var(--font-pixel);
@@ -2076,7 +2149,7 @@ body::before {
 }
 
 .footer-copyright {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
 }
 
@@ -2539,19 +2612,41 @@ body::before {
     display: none;
   }
 
-  /* Section 9: Footer */
+  .final-hash-area {
+    width: 100%;
+    margin: 8px auto 14px auto;
+  }
+
+  .final-hash-badge {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .hash-mini {
+    font-size: 0.65rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Section 9: Footer (Centered with Big Eye Watermark) */
   .site-footer {
-    padding: 32px 0;
+    padding: 48px 0 36px 0;
   }
 
-  .footer-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
+  .footer-centered-container {
+    gap: 16px;
   }
 
-  .footer-meta-side {
-    align-items: flex-start;
+  .footer-big-eye-img {
+    width: clamp(120px, 38vw, 180px);
+    opacity: 0.16;
+  }
+
+  .footer-center-content {
+    gap: 8px;
   }
 
   /* Modals & Lightbox */
@@ -2707,6 +2802,19 @@ body::before {
   .final-cta-title {
     font-size: clamp(1.8rem, 8vw, 2.4rem);
   }
+
+  .final-hash-badge {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .hash-mini {
+    font-size: 0.62rem;
+  }
+
+  .footer-big-eye-img {
+    width: clamp(110px, 36vw, 150px);
+  }
 }
 
 /* Extra Small Phones (<= 360px) */
@@ -2730,5 +2838,9 @@ body::before {
   .final-specs-row {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .footer-big-eye-img {
+    width: 110px;
   }
 }

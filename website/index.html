@@ -748,10 +748,13 @@
             </div>
           </div>
 
-          <!-- APK SHA-256 box in final section -->
+          <!-- APK SHA-256 integrity badge in final section -->
           <div class="final-hash-area">
-            <span class="hash-subhead">OFFICIAL BUILD HASH:</span>
-            <code class="hash-mini">6f83c948fe355b52eb0442ea704c695785026d2fda499de24380297fe320c114</code>
+            <div class="final-hash-badge">
+              <span class="hash-subhead">SHA-256:</span>
+              <code class="hash-mini" id="final-sha256-code" title="6f83c948fe355b52eb0442ea704c695785026d2fda499de24380297fe320c114">6f83c948fe355b52eb0442ea704c695785026d2fda499de24380297fe320c114</code>
+              <button class="btn-copy-hash-mini" id="copy-final-hash-btn" aria-label="Copy SHA-256 checksum">COPY</button>
+            </div>
           </div>
 
           <div class="download-instruction-note">
@@ -843,21 +846,22 @@
   <!-- 11. FOOTER                                                           -->
   <!-- ==================================================================== -->
   <footer class="site-footer" role="contentinfo">
-    <div class="section-container footer-content">
+    <div class="section-container footer-centered-container">
       
-      <div class="footer-brand-side">
-        <a href="#hero" class="brand-link" aria-label="MAYA Home">
-          <img src="/assets/maya/maya_eye.svg" alt="MAYA Eye" width="28" height="17">
-          <span class="brand-wordmark">MAYA</span>
-        </a>
-        <p class="footer-tagline">Personal Movie Streaming &amp; Universal Player.</p>
-      </div>
+      <!-- Big Eye in middle with low opacity (MAYA wordmark removed) -->
+      <a href="#hero" class="footer-big-eye-link" aria-label="Back to top">
+        <div class="footer-eye-glow" aria-hidden="true"></div>
+        <img src="/assets/maya/maya_eye.svg" alt="MAYA Eye" class="footer-big-eye-img" width="220" height="128">
+      </a>
 
-      <div class="footer-meta-side">
+      <div class="footer-center-content">
+        <p class="footer-tagline">Personal Movie Streaming &amp; Universal Player.</p>
+        
         <div class="footer-status-indicator">
           <span class="status-live-dot" aria-hidden="true"></span>
           <span>SYSTEM READY &bull; BUILD 1.0</span>
         </div>
+
         <p class="footer-copyright">
           &copy; <span id="current-year">2026</span> MAYA. All rights reserved.
         </p>
