@@ -37,10 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 9. Mobile Navigation Drawer
   initMobileMenu();
 
-  // 10. Scroll Reveal Observer
+  // 10. Mobile Showcase Swipe Carousel Controller
+  initMobileShowcaseCarousel();
+
+  // 11. Scroll Reveal Observer
   initScrollReveals();
 
-  // 11. Dynamic Year
+  // 12. Dynamic Year
   const yearEl = document.getElementById('current-year');
   if (yearEl) {
     yearEl.textContent = CONFIG.COPYRIGHT_YEAR.toString();
@@ -429,11 +432,12 @@ function initHeaderScrollEffect() {
 }
 
 /**
- * Mobile Navigation Drawer
+ * Mobile Navigation Drawer with lock scrolling and close trigger
  */
 function initMobileMenu() {
   const toggleBtn = document.getElementById('menu-toggle');
   const mobileMenu = document.getElementById('mobile-menu');
+  const closeBtn = document.getElementById('menu-close-btn');
   if (!toggleBtn || !mobileMenu) return;
 
   const toggle = (forceClose = false) => {
@@ -441,14 +445,21 @@ function initMobileMenu() {
     mobileMenu.classList.toggle('open', isOpen);
     toggleBtn.setAttribute('aria-expanded', isOpen.toString());
     mobileMenu.setAttribute('aria-hidden', (!isOpen).toString());
+    
+    // Lock background scroll when drawer is open
+    document.body.style.overflow = isOpen ? 'hidden' : '';
 
     const bars = toggleBtn.querySelectorAll('.menu-bar');
-    if (isOpen) {
-      bars[0].style.transform = 'translateY(4px) rotate(45deg)';
-      bars[1].style.transform = 'translateY(-4px) rotate(-45deg)';
-    } else {
-      bars[0].style.transform = 'none';
-      bars[1].style.transform = 'none';
+    if (bars && bars.length >= 2) {
+      if (isOpen) {
+        bars[0].style.transform = 'translateY(5px) rotate(45deg)';
+        bars[1].style.opacity = '0';
+        if (bars[2]) bars[2].style.transform = 'translateY(-5px) rotate(-45deg)';
+      } else {
+        bars[0].style.transform = 'none';
+        bars[1].style.opacity = '1';
+        if (bars[2]) bars[2].style.transform = 'none';
+      }
     }
   };
 
@@ -457,15 +468,86 @@ function initMobileMenu() {
     toggle();
   });
 
-  const mobileLinks = mobileMenu.querySelectorAll('a');
-  mobileLinks.forEach(link => {
-    link.addEventListener('click', () => toggle(true));
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => toggle(true));
+  }
+
+  // Close drawer upon clicking any navigation link or download button
+  const mobileActionItems = mobileMenu.querySelectorAll('a, button:not(#menu-close-btn)');
+  mobileActionItems.forEach(item => {
+    item.addEventListener('click', () => {
+      setTimeout(() => toggle(true), 120);
+    });
   });
 
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+      toggle(true);
+    }
+  });
+
+  // Close when clicking outside drawer
   document.addEventListener('click', (e) => {
     if (mobileMenu.classList.contains('open') && !mobileMenu.contains(e.target) && !toggleBtn.contains(e.target)) {
       toggle(true);
     }
+  });
+}
+
+/**
+ * Mobile Showcase Carousel: syncs swipe position with dot indicators and slide counter
+ */
+function initMobileShowcaseCarousel() {
+  const track = document.getElementById('mobile-showcase-track');
+  const dots = document.querySelectorAll('#mobile-dots .carousel-dot');
+  const counter = document.getElementById('mobile-counter');
+  const slides = document.querySelectorAll('.mobile-showcase-slide');
+
+  if (!track || !dots.length || !slides.length) return;
+
+  let isTicking = false;
+
+  const updateActiveDot = () => {
+    const scrollLeft = track.scrollLeft;
+    const slideWidth = slides[0].offsetWidth || track.clientWidth;
+    const activeIndex = Math.min(
+      Math.max(0, Math.round(scrollLeft / slideWidth)),
+      slides.length - 1
+    );
+
+    dots.forEach((dot, idx) => {
+      const isActive = idx === activeIndex;
+      dot.classList.toggle('is-active', isActive);
+      dot.setAttribute('aria-selected', isActive.toString());
+    });
+
+    if (counter) {
+      const current = (activeIndex + 1).toString().padStart(2, '0');
+      const total = slides.length.toString().padStart(2, '0');
+      counter.textContent = `${current} / ${total} • SWIPE`;
+    }
+
+    isTicking = false;
+  };
+
+  track.addEventListener('scroll', () => {
+    if (!isTicking) {
+      window.requestAnimationFrame(updateActiveDot);
+      isTicking = true;
+    }
+  }, { passive: true });
+
+  dots.forEach((dot, idx) => {
+    dot.addEventListener('click', () => {
+      const targetSlide = slides[idx];
+      if (targetSlide) {
+        track.scrollTo({
+          left: targetSlide.offsetLeft,
+          behavior: 'smooth'
+        });
+      }
+    });
   });
 }
 

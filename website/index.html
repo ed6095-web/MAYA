@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>MAYA — Personal Movie Streaming &amp; Universal Player</title>
   <meta name="description" content="MAYA is a focused, high-performance personal movie streaming platform and universal stream player. Watch cinema without clutter or distractions.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -33,6 +33,7 @@
         <span class="brand-wordmark">MAYA</span>
       </a>
 
+      <!-- Desktop Nav -->
       <nav class="desktop-nav" aria-label="Main site navigation">
         <a href="#about" class="nav-link">ABOUT</a>
         <a href="#showcase" class="nav-link">EXPERIENCE</a>
@@ -41,6 +42,7 @@
       </nav>
 
       <div class="nav-actions">
+        <!-- Compact desktop CTA -->
         <button class="btn-download-nav js-download-btn" aria-label="Download MAYA APK">
           <span class="btn-spinner" aria-hidden="true"></span>
           <span class="btn-content">
@@ -52,31 +54,71 @@
             <span class="cta-text">DOWNLOAD</span>
           </span>
         </button>
+
+        <!-- Touch-Friendly Mobile Hamburger (44px target) -->
         <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+          <span class="menu-bar"></span>
           <span class="menu-bar"></span>
           <span class="menu-bar"></span>
         </button>
       </div>
     </div>
 
-    <!-- Mobile Drawer -->
+    <!-- Dedicated Fullscreen / Slide Mobile Drawer -->
     <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-      <nav class="mobile-nav-links" aria-label="Mobile navigation menu">
-        <a href="#about" class="mobile-nav-link">ABOUT</a>
-        <a href="#showcase" class="mobile-nav-link">EXPERIENCE</a>
-        <a href="#showcase" class="mobile-nav-link">SHOWCASE</a>
-        <a href="#features" class="mobile-nav-link">FEATURES</a>
-        <button class="btn-download-mobile js-download-btn" aria-label="Download MAYA APK">
-          <span class="btn-spinner" aria-hidden="true"></span>
-          <span class="btn-content">DOWNLOAD MAYA APK</span>
-        </button>
-      </nav>
+      <div class="mobile-menu-inner">
+        <div class="mobile-menu-top">
+          <div class="mobile-menu-brand">
+            <img src="/assets/maya/maya_eye.svg" alt="MAYA Eye" width="28" height="17">
+            <span>MAYA</span>
+          </div>
+          <button class="mobile-menu-close" id="menu-close-btn" aria-label="Close menu">&times;</button>
+        </div>
+
+        <nav class="mobile-nav-links" aria-label="Mobile navigation menu">
+          <a href="#about" class="mobile-nav-link">
+            <span class="mobile-nav-num">01</span>
+            <span class="mobile-nav-label">ABOUT MAYA</span>
+          </a>
+          <a href="#showcase" class="mobile-nav-link">
+            <span class="mobile-nav-num">02</span>
+            <span class="mobile-nav-label">EXPERIENCE</span>
+          </a>
+          <a href="#showcase" class="mobile-nav-link">
+            <span class="mobile-nav-num">03</span>
+            <span class="mobile-nav-label">SHOWCASE</span>
+          </a>
+          <a href="#features" class="mobile-nav-link">
+            <span class="mobile-nav-num">04</span>
+            <span class="mobile-nav-label">FEATURES</span>
+          </a>
+          <a href="#download" class="mobile-nav-link">
+            <span class="mobile-nav-num">05</span>
+            <span class="mobile-nav-label">DOWNLOAD APK</span>
+          </a>
+        </nav>
+
+        <div class="mobile-menu-cta-wrap">
+          <button class="btn-download-mobile js-download-btn" aria-label="Download MAYA APK">
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span class="btn-content">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>DOWNLOAD MAYA APK</span>
+            </span>
+          </button>
+          <p class="mobile-menu-sub">Direct APK download &bull; Free &bull; Android 8.0+</p>
+        </div>
+      </div>
     </div>
   </header>
 
   <main id="main-content">
     <!-- ==================================================================== -->
-    <!-- 2. HERO SECTION                                                      -->
+    <!-- 2. HERO SECTION (Perfect Mobile Centering & Clamped Typography)       -->
     <!-- ==================================================================== -->
     <section class="hero-section" id="hero" aria-labelledby="hero-heading-title">
       <div class="hero-container">
@@ -95,7 +137,7 @@
           </div>
         </div>
 
-        <!-- Hero Display Typography -->
+        <!-- Hero Display Typography (Controlled line breaks for mobile) -->
         <div class="hero-copy-block reveal-item delay-1">
           <h1 class="hero-heading" id="hero-heading-title">
             <span class="block-line">THE WAY</span>
@@ -121,7 +163,7 @@
               </span>
             </button>
 
-            <!-- Desktop to Mobile QR Code Option -->
+            <!-- Desktop QR Code (Strictly hidden on mobile) -->
             <div class="desktop-phone-download" id="desktop-qr-container">
               <button class="btn-qr-toggle" id="qr-toggle-btn" aria-expanded="false" aria-controls="qr-popover" aria-label="Show QR code to download on Android phone">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -133,7 +175,6 @@
                 <span>DOWNLOAD ON PHONE</span>
               </button>
               
-              <!-- Popover containing the dynamically generated QR code -->
               <div class="qr-popover" id="qr-popover" hidden>
                 <div class="qr-popover-header">
                   <span class="qr-popover-title">SCAN TO DOWNLOAD</span>
@@ -180,7 +221,7 @@
     </section>
 
     <!-- ==================================================================== -->
-    <!-- 3. WHAT IS MAYA? (Refined 2-Column Editorial Layout)                  -->
+    <!-- 3. WHAT IS MAYA? (Mobile-Optimized Single-Column Flow)                -->
     <!-- ==================================================================== -->
     <section class="editorial-section" id="about" aria-labelledby="about-title">
       <div class="section-container">
@@ -244,7 +285,6 @@
     <!-- 5. UNIFIED "INSIDE MAYA" / "MAYA EXPERIENCE" SHOWCASE                -->
     <!-- ==================================================================== -->
     <section class="showcase-section" id="showcase" aria-labelledby="showcase-title">
-      <!-- Hidden anchor for #experience navigation -->
       <span id="experience" class="nav-anchor-target" aria-hidden="true"></span>
 
       <div class="section-container">
@@ -255,15 +295,15 @@
           <p class="section-subtitle">A unified product showcase. This is what MAYA looks and feels like in your hand.</p>
         </div>
 
-        <!-- Unified Realistic Multi-Device Showcase -->
+        <!-- Showcase Theater -->
         <div class="showcase-theater reveal-item">
           
-          <!-- Background Ambient Glow behind center device -->
           <div class="showcase-backlight" aria-hidden="true"></div>
 
-          <div class="theater-stage">
+          <!-- DESKTOP 3-DEVICE STAGE (Hidden on mobile) -->
+          <div class="theater-stage desktop-theater-stage">
             
-            <!-- Secondary Left Device Mockup: Home & Discovery Feed -->
+            <!-- Secondary Left Device Mockup -->
             <div class="device-dock dock-left js-dock-switch" data-screen-index="0" title="Click to inspect Home screen in center" tabindex="0" role="button" aria-label="Switch main display to Home &amp; Discovery">
               <div class="phone-mockup phone-secondary">
                 <div class="phone-rim-glow"></div>
@@ -277,7 +317,7 @@
               </div>
             </div>
 
-            <!-- Main Centerpiece Device Mockup: Interactive Screen Viewer -->
+            <!-- Main Centerpiece Device Mockup -->
             <div class="device-dock dock-center" id="main-device-center">
               <div class="phone-mockup phone-hero">
                 <div class="phone-earpiece" aria-hidden="true"></div>
@@ -288,7 +328,6 @@
                        alt="MAYA mobile home screen displaying Continue Watching queue with Welcome to The Jungle 2026 and Backrooms, category filter pills, and bottom navigation" 
                        class="mockup-img active-stage-img" 
                        id="main-stage-img">
-                  <!-- Gloss reflection overlay -->
                   <div class="screen-gloss-reflection" aria-hidden="true"></div>
                 </div>
                 <div class="screen-caption-badge" id="main-stage-caption">
@@ -298,7 +337,7 @@
               </div>
             </div>
 
-            <!-- Secondary Right Device Mockup: Universal Stream Player -->
+            <!-- Secondary Right Device Mockup -->
             <div class="device-dock dock-right js-dock-switch" data-screen-index="2" title="Click to inspect Link Player in center" tabindex="0" role="button" aria-label="Switch main display to Universal Link Player">
               <div class="phone-mockup phone-secondary">
                 <div class="phone-rim-glow"></div>
@@ -314,8 +353,8 @@
 
           </div>
 
-          <!-- Minimal Screenshot Switcher Navigation -->
-          <div class="showcase-nav-bar" role="tablist" aria-label="App screen selector">
+          <!-- DESKTOP SCREEN SWITCHER TABS (Hidden on mobile) -->
+          <div class="showcase-nav-bar desktop-showcase-nav" role="tablist" aria-label="App screen selector">
             <button class="screen-nav-tab is-active" role="tab" aria-selected="true" data-index="0" data-img="/assets/maya/app_home.png" data-caption="01 // HOME &amp; DISCOVERY" data-alt="MAYA mobile home screen displaying Continue Watching queue with Welcome to The Jungle 2026 and Backrooms, category filter pills, and bottom navigation">
               <span class="tab-num">01</span>
               <span class="tab-name">HOME</span>
@@ -336,6 +375,102 @@
               <span class="tab-num">05</span>
               <span class="tab-name">IDENTITY</span>
             </button>
+          </div>
+
+          <!-- ============================================================== -->
+          <!-- MOBILE-FIRST SWIPEABLE SHOWCASE (Shown strictly on mobile)       -->
+          <!-- ============================================================== -->
+          <div class="mobile-showcase-carousel-wrapper" aria-label="Mobile swipeable showcase">
+            <div class="mobile-showcase-track" id="mobile-showcase-track">
+              
+              <!-- Slide 01: Home -->
+              <div class="mobile-showcase-slide" data-slide-index="0">
+                <div class="mobile-slide-tag">01 // HOME &amp; DISCOVERY</div>
+                <div class="phone-mockup phone-mobile-showcase js-lightbox-trigger" data-img="/assets/maya/app_home.png" data-caption="MAYA mobile home screen displaying Continue Watching queue with Welcome to The Jungle 2026 and Backrooms, category filter pills, and bottom navigation" tabindex="0" role="button" aria-label="Inspect Home screen">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
+                  <div class="phone-screen">
+                    <img src="/assets/maya/app_home.png" alt="MAYA Home screen" class="mockup-img" loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <p class="mobile-slide-caption">Continue Watching &bull; Instant Resume</p>
+              </div>
+
+              <!-- Slide 02: Cinema Player -->
+              <div class="mobile-showcase-slide" data-slide-index="1">
+                <div class="mobile-slide-tag">02 // CINEMA PLAYER</div>
+                <div class="cinema-display-mockup cinema-mobile-showcase js-lightbox-trigger" data-img="/assets/maya/app_player_landscape.png" data-caption="MAYA landscape cinema player interface playing Backrooms with 720p HD badge, playback controls, timeline scrubber, and fit-to-screen toggle" tabindex="0" role="button" aria-label="Inspect Cinema Player screen">
+                  <div class="display-header-bar">
+                    <span class="display-pill-title">MAYA CINEMA PLAYER</span>
+                    <span class="display-pill-badge">720p HD</span>
+                  </div>
+                  <div class="display-screen">
+                    <img src="/assets/maya/app_player_landscape.png" alt="MAYA Cinema Player HUD" class="mockup-img" loading="lazy">
+                  </div>
+                </div>
+                <p class="mobile-slide-caption">720p HD &bull; Scrubber HUD &bull; Screen Fit</p>
+              </div>
+
+              <!-- Slide 03: Universal Link Player -->
+              <div class="mobile-showcase-slide" data-slide-index="2">
+                <div class="mobile-slide-tag">03 // UNIVERSAL STREAM</div>
+                <div class="phone-mockup phone-mobile-showcase js-lightbox-trigger" data-img="/assets/maya/app_link_player.png" data-caption="MAYA Universal Stream Player screen showing input field for video URLs, Play Stream button, and supported platforms including YouTube, Hubstream, and Google Drive" tabindex="0" role="button" aria-label="Inspect Link Player screen">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
+                  <div class="phone-screen">
+                    <img src="/assets/maya/app_link_player.png" alt="MAYA Universal Link Player" class="mockup-img" loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <p class="mobile-slide-caption">Direct URL Player &bull; Multi-Platform</p>
+              </div>
+
+              <!-- Slide 04: Watchlist -->
+              <div class="mobile-showcase-slide" data-slide-index="3">
+                <div class="mobile-slide-tag">04 // PERSONAL WATCHLIST</div>
+                <div class="phone-mockup phone-mobile-showcase js-lightbox-trigger" data-img="/assets/maya/app_watchlist.png" data-caption="MAYA My List screen showing empty watchlist state with bookmark prompt and bottom navigation tabs" tabindex="0" role="button" aria-label="Inspect Watchlist screen">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
+                  <div class="phone-screen">
+                    <img src="/assets/maya/app_watchlist.png" alt="MAYA Watchlist screen" class="mockup-img" loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <p class="mobile-slide-caption">My List &bull; One-Tap Bookmarking</p>
+              </div>
+
+              <!-- Slide 05: Identity -->
+              <div class="mobile-showcase-slide" data-slide-index="4">
+                <div class="mobile-slide-tag">05 // MAYA IDENTITY</div>
+                <div class="phone-mockup phone-mobile-showcase js-lightbox-trigger" data-img="/assets/maya/hero_splash.png" data-caption="MAYA launch splash screen featuring gold concentric eye emblem centered on pure black background with spaced brand lettering" tabindex="0" role="button" aria-label="Inspect Splash screen">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
+                  <div class="phone-screen">
+                    <img src="/assets/maya/hero_splash.png" alt="MAYA Splash screen" class="mockup-img" loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <p class="mobile-slide-caption">Gold Emblem on Pure Black</p>
+              </div>
+
+            </div>
+
+            <!-- Mobile Swipe Indicators & Dot Controller -->
+            <div class="mobile-showcase-controls">
+              <div class="carousel-dots" id="mobile-dots" role="tablist" aria-label="Swipe navigation dots">
+                <button class="carousel-dot is-active" aria-label="View slide 1" data-dot-index="0"></button>
+                <button class="carousel-dot" aria-label="View slide 2" data-dot-index="1"></button>
+                <button class="carousel-dot" aria-label="View slide 3" data-dot-index="2"></button>
+                <button class="carousel-dot" aria-label="View slide 4" data-dot-index="3"></button>
+                <button class="carousel-dot" aria-label="View slide 5" data-dot-index="4"></button>
+              </div>
+              <span class="carousel-counter" id="mobile-counter">01 / 05 &bull; SWIPE</span>
+            </div>
           </div>
 
         </div>
@@ -374,11 +509,15 @@
             <div class="story-mockup-col">
               <div class="feature-device-wrapper js-lightbox-trigger" data-img="/assets/maya/app_home.png" data-caption="MAYA mobile home screen displaying Continue Watching queue with Welcome to The Jungle 2026 and Backrooms, category filter pills, and bottom navigation" tabindex="0" role="button" aria-label="Click to inspect Home screen screenshot">
                 <div class="phone-mockup phone-compact">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
                   <div class="phone-screen">
                     <img src="/assets/maya/app_home.png" 
                          alt="MAYA mobile home screen displaying Continue Watching queue with Welcome to The Jungle 2026 and Backrooms, category filter pills, and bottom navigation" 
                          class="mockup-img" 
                          loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
                   </div>
                 </div>
               </div>
@@ -391,7 +530,7 @@
               <div class="story-tag">02 // UNIVERSAL STREAM</div>
               <h3 class="story-title">PLAY ANY LINK WITHOUT THIRD-PARTY POPUPS</h3>
               <p class="story-desc">
-                Paste any external link directly into MAYA. Native built-in stream decoding handles multiple hosting platforms and raw video formats seamlessly.
+                Paste any video link directly into MAYA and start watching immediately. Play seamlessly across supported platforms and direct video links without third-party popups.
               </p>
               <ul class="story-specs-list">
                 <li><span>&bull;</span> YouTube, Hubstream, Google Drive public links</li>
@@ -402,11 +541,15 @@
             <div class="story-mockup-col">
               <div class="feature-device-wrapper js-lightbox-trigger" data-img="/assets/maya/app_link_player.png" data-caption="MAYA Universal Stream Player screen showing input field for video URLs, Play Stream button, and supported platforms including YouTube, Hubstream, and Google Drive" tabindex="0" role="button" aria-label="Click to inspect Universal Link Player screenshot">
                 <div class="phone-mockup phone-compact">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
                   <div class="phone-screen">
                     <img src="/assets/maya/app_link_player.png" 
                          alt="MAYA Universal Stream Player screen showing input field for video URLs, Play Stream button, and supported platforms including YouTube, Hubstream, and Google Drive" 
                          class="mockup-img" 
                          loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
                   </div>
                 </div>
               </div>
@@ -465,11 +608,15 @@
             <div class="story-mockup-col">
               <div class="feature-device-wrapper js-lightbox-trigger" data-img="/assets/maya/app_watchlist.png" data-caption="MAYA My List screen showing empty watchlist state with bookmark prompt and bottom navigation tabs" tabindex="0" role="button" aria-label="Click to inspect watchlist screenshot">
                 <div class="phone-mockup phone-compact">
+                  <div class="phone-earpiece" aria-hidden="true"></div>
+                  <div class="phone-camera" aria-hidden="true"></div>
+                  <div class="phone-rim-glow"></div>
                   <div class="phone-screen">
                     <img src="/assets/maya/app_watchlist.png" 
                          alt="MAYA My List screen showing empty watchlist state with bookmark prompt and bottom navigation tabs" 
                          class="mockup-img" 
                          loading="lazy">
+                    <div class="screen-gloss-reflection" aria-hidden="true"></div>
                   </div>
                 </div>
               </div>
@@ -492,7 +639,7 @@
             <span class="section-tag">[ 03 // VISUAL ARCHIVE ]</span>
             <h2 class="gallery-title" id="gallery-title">ALL APPLICATION SCREENS</h2>
           </div>
-          <p class="gallery-tip">Tap any screen to view in high resolution &rarr;</p>
+          <p class="gallery-tip">Tap any screen to enlarge &rarr;</p>
         </div>
 
         <div class="gallery-strip">
@@ -506,19 +653,19 @@
           </div>
 
           <!-- Screen 2 -->
-          <div class="gallery-item js-lightbox-trigger" data-img="/assets/maya/app_link_player.png" data-caption="MAYA Universal Stream Player screen showing input field for video URLs, Play Stream button, and supported platforms including YouTube, Hubstream, and Google Drive" tabindex="0" role="button" aria-label="View Universal Link Player screen">
-            <div class="gallery-thumb-wrapper">
-              <img src="/assets/maya/app_link_player.png" alt="MAYA Universal Link Player thumbnail" loading="lazy">
-            </div>
-            <span class="gallery-caption">02 // LINK PLAYER</span>
-          </div>
-
-          <!-- Screen 3 -->
           <div class="gallery-item js-lightbox-trigger" data-img="/assets/maya/app_player_landscape.png" data-caption="MAYA landscape cinema player interface playing Backrooms with 720p HD badge, playback controls, timeline scrubber, and fit-to-screen toggle" tabindex="0" role="button" aria-label="View Cinema Player screen">
             <div class="gallery-thumb-wrapper landscape-thumb">
               <img src="/assets/maya/app_player_landscape.png" alt="MAYA Cinema Player thumbnail" loading="lazy">
             </div>
-            <span class="gallery-caption">03 // THE PLAYER</span>
+            <span class="gallery-caption">02 // THE PLAYER</span>
+          </div>
+
+          <!-- Screen 3 -->
+          <div class="gallery-item js-lightbox-trigger" data-img="/assets/maya/app_link_player.png" data-caption="MAYA Universal Stream Player screen showing input field for video URLs, Play Stream button, and supported platforms including YouTube, Hubstream, and Google Drive" tabindex="0" role="button" aria-label="View Universal Link Player screen">
+            <div class="gallery-thumb-wrapper">
+              <img src="/assets/maya/app_link_player.png" alt="MAYA Universal Link Player thumbnail" loading="lazy">
+            </div>
+            <span class="gallery-caption">03 // LINK PLAYER</span>
           </div>
 
           <!-- Screen 4 -->
