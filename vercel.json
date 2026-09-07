@@ -1,9 +1,14 @@
 {
   "version": 2,
-  "outputDirectory": "frontend/build/web",
+  "buildCommand": "cd website && npm install && npm run build",
+  "outputDirectory": "website/dist",
   "routes": [
     {
       "handle": "filesystem"
+    },
+    {
+      "src": "/downloads/(.*)",
+      "dest": "/downloads/$1"
     },
     {
       "src": "/.*",

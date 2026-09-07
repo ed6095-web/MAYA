@@ -36,3 +36,8 @@ backend/thumbnails/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Website
+website/node_modules/
+website/dist/
+
