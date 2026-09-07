@@ -122,31 +122,40 @@ export const BrowseView = {
                 </button>
               </div>
             </div>
-
-            <!-- Mobile Drawer for Online Mode -->
-            <div class="online-mobile-drawer" id="online-drawer" hidden>
-              <div class="drawer-header">
-                <div class="drawer-brand">
-                  <img src="/assets/maya/maya_eye.svg" alt="MAYA" width="26" height="16">
-                  <span>MAYA WEB</span>
-                </div>
-                <button class="drawer-close-btn" id="online-drawer-close">&times;</button>
-              </div>
-              <nav class="drawer-links">
-                <a href="/browse" class="drawer-link">HOME</a>
-                <a href="/search" class="drawer-link">SEARCH &amp; EXPLORE</a>
-                <a href="/watchlist" class="drawer-link">WATCHLIST (${watchlist.length})</a>
-                <a href="/history" class="drawer-link">CONTINUE WATCHING (${continueWatching.length})</a>
-                <a href="/genre/Action" class="drawer-link">GENRE: ACTION</a>
-                <a href="/genre/Thriller" class="drawer-link">GENRE: THRILLER</a>
-                <a href="/genre/Animation" class="drawer-link">GENRE: ANIME</a>
-                <a href="/" class="drawer-link drawer-link-exit">&larr; BACK TO MAYA LANDING</a>
-              </nav>
-              <div class="drawer-footer">
-                <button class="btn-download-primary js-download-btn" style="width:100%;">DOWNLOAD MAYA APK</button>
-              </div>
-            </div>
           </header>
+
+          <!-- Mobile Drawer for Online Mode (Full Viewport Modal) -->
+          <div class="online-mobile-drawer" id="online-drawer" hidden>
+            <div class="drawer-header">
+              <div class="drawer-brand">
+                <img src="/assets/maya/maya_eye.svg" alt="MAYA" width="26" height="16">
+                <span>MAYA WEB</span>
+              </div>
+              <button class="drawer-close-btn" id="online-drawer-close" aria-label="Close menu">&times;</button>
+            </div>
+            <nav class="drawer-links">
+              <a href="/browse" class="drawer-link">HOME</a>
+              <a href="/search" class="drawer-link">SEARCH &amp; EXPLORE</a>
+              <a href="/watchlist" class="drawer-link">WATCHLIST (${watchlist.length})</a>
+              <a href="/history" class="drawer-link">CONTINUE WATCHING (${continueWatching.length})</a>
+
+              <div class="drawer-genres-section">
+                <span class="drawer-genres-label">GENRES</span>
+                <div class="drawer-genre-chips">
+                  <a href="/genre/Action" class="drawer-genre-chip">Action</a>
+                  <a href="/genre/Thriller" class="drawer-genre-chip">Thriller</a>
+                  <a href="/genre/Drama" class="drawer-genre-chip">Drama</a>
+                  <a href="/genre/Comedy" class="drawer-genre-chip">Comedy</a>
+                  <a href="/genre/Animation" class="drawer-genre-chip">Anime</a>
+                </div>
+              </div>
+
+              <a href="/" class="drawer-link drawer-link-exit">&larr; BACK TO MAYA LANDING</a>
+            </nav>
+            <div class="drawer-footer">
+              <button class="btn-download-primary js-download-btn" style="width:100%; max-width:340px; margin:0 auto;">DOWNLOAD MAYA APK</button>
+            </div>
+          </div>
 
           <main class="online-content-area" id="online-main">
             
@@ -504,6 +513,16 @@ export const BrowseView = {
     if (closeBtn && drawer) {
       closeBtn.addEventListener('click', () => {
         drawer.hidden = true;
+      });
+    }
+
+    if (drawer) {
+      drawer.querySelectorAll('a, button').forEach(el => {
+        if (el !== closeBtn) {
+          el.addEventListener('click', () => {
+            drawer.hidden = true;
+          });
+        }
       });
     }
 

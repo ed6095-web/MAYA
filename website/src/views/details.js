@@ -44,19 +44,37 @@ export const DetailsView = {
         return;
       }
 
+      // Safe normalization & fallbacks
+      const normMovie = CatalogueService.normalizeMovie(movie);
+      if (!normMovie) {
+        throw new Error('Failed to normalize movie details.');
+      }
+
+      const title = normMovie.title || 'Untitled Cinema';
+      const backdropUrl = normMovie.backdropUrl || normMovie.posterUrl || '/assets/maya/placeholder_poster.jpg';
+      const posterUrl = normMovie.posterUrl || normMovie.backdropUrl || '/assets/maya/placeholder_poster.jpg';
+      const rating = normMovie.rating ? Number(normMovie.rating).toFixed(1) : null;
+      const year = normMovie.releaseYear || normMovie.release_year || '';
+      const runtime = normMovie.runtime ? `${normMovie.runtime} min` : '';
+      const languages = (normMovie.languages && normMovie.languages.length > 0) ? normMovie.languages.join(', ') : '';
+      const genres = Array.isArray(normMovie.genres) ? normMovie.genres : [];
+      const description = normMovie.description || 'No description available for this title.';
+      const inWatchlist = WatchlistService.isInWatchlist(movieId);
+      const quality = normMovie.quality || normMovie.rip || 'HD';
+
       // Update document title for SEO
-      router.updateTitle(`${movie.title} (${movie.release_year || ''})`);
+      router.updateTitle(`${title} ${year ? `(${year})` : ''}`);
 
-        // Fetch playability status and related movies
-        const status = await PlaybackService.getPlayabilityStatus(movie);
-        const relatedMovies = await CatalogueService.getRelatedMovies(movie, 6);
+      // Fetch playability status and related movies
+      const status = await PlaybackService.getPlayabilityStatus(normMovie);
+      const relatedMovies = await CatalogueService.getRelatedMovies(normMovie, 6);
 
-        container.innerHTML = `
+      container.innerHTML = `
         <div class="movie-details-page">
           
           <!-- Atmospheric Backdrop Header -->
           <div class="details-backdrop-container">
-            <img src="${backdropUrl}" alt="${movie.title} backdrop" class="details-backdrop-img">
+            <img src="${backdropUrl}" alt="${title} backdrop" class="details-backdrop-img" onerror="this.onerror=null;this.src='/assets/maya/placeholder_poster.jpg';">
             <div class="details-backdrop-gradient"></div>
             <div class="details-top-bar">
               <a href="/browse" class="btn-back-nav" aria-label="Return to catalogue">
@@ -75,7 +93,7 @@ export const DetailsView = {
               <!-- Poster Column -->
               <div class="details-poster-col">
                 <div class="details-poster-frame">
-                  <img src="${posterUrl}" alt="MAYA official poster for ${movie.title}" class="details-poster-img">
+                  <img src="${posterUrl}" alt="MAYA official poster for ${title}" class="details-poster-img" onerror="this.onerror=null;this.src='/assets/maya/placeholder_poster.jpg';">
                   <div class="poster-rim-glow"></div>
                 </div>
               </div>
@@ -84,11 +102,11 @@ export const DetailsView = {
               <div class="details-info-col">
                 <div class="details-tag-row">
                   <span class="details-badge-identity">MAYA CINEMA</span>
-                  ${movie.rip ? `<span class="details-badge-quality">${movie.rip}</span>` : ''}
+                  ${quality ? `<span class="details-badge-quality">${quality}</span>` : ''}
                   ${status.isPlayable ? '<span class="details-badge-verified">AUTHORIZED STREAM ✓</span>' : '<span class="details-badge-catonly">CATALOGUE ONLY</span>'}
                 </div>
 
-                <h1 class="details-movie-title">${movie.title}</h1>
+                <h1 class="details-movie-title">${title}</h1>
 
                 <!-- Metadata Row -->
                 <div class="details-meta-pills">
@@ -106,7 +124,7 @@ export const DetailsView = {
                 <!-- Synopsis -->
                 <div class="details-synopsis-block">
                   <h2 class="synopsis-label">OVERVIEW</h2>
-                  <p class="synopsis-text">${movie.description || 'No detailed synopsis available for this title.'}</p>
+                  <p class="synopsis-text">${description}</p>
                 </div>
 
                 <!-- Playback & Source Availability Info -->
@@ -121,7 +139,7 @@ export const DetailsView = {
                 <!-- Action Buttons Row -->
                 <div class="details-actions-row">
                   ${status.isPlayable ? `
-                    <a href="/watch/${movieId}" class="btn-details-play" aria-label="Play ${movie.title} in MAYA player">
+                    <a href="/watch/${movieId}" class="btn-details-play" aria-label="Play ${title} in MAYA player">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                       <span>PLAY NOW</span>
                     </a>
@@ -162,7 +180,7 @@ export const DetailsView = {
                     ${relatedMovies.map(rel => `
                       <article class="movie-card" data-movie-id="${rel.tmdb_id || rel.id}" tabindex="0">
                         <div class="card-poster-frame">
-                          <img src="${rel.poster || '/assets/maya/app_home.png'}" alt="${rel.title}" class="card-poster-img" loading="lazy">
+                          <img src="${rel.poster || rel.posterUrl || '/assets/maya/placeholder_poster.jpg'}" alt="${rel.title}" class="card-poster-img" loading="lazy" onerror="this.onerror=null;this.src='/assets/maya/placeholder_poster.jpg';">
                           <div class="card-hover-overlay">
                             <div class="overlay-bottom">
                               <a href="/movie/${rel.tmdb_id || rel.id}" class="card-quick-btn">DETAILS &rarr;</a>
@@ -192,7 +210,7 @@ export const DetailsView = {
       const watchlistBtn = container.querySelector('.js-details-watchlist-btn');
       if (watchlistBtn) {
         watchlistBtn.addEventListener('click', () => {
-          const added = WatchlistService.toggleWatchlist(movie);
+          const added = WatchlistService.toggleWatchlist(normMovie);
           const iconSpan = watchlistBtn.querySelector('.watchlist-status-icon');
           const textSpan = watchlistBtn.querySelector('.watchlist-status-text');
           if (iconSpan) iconSpan.textContent = added ? '✓' : '+';
@@ -204,8 +222,11 @@ export const DetailsView = {
       console.error('Error rendering details:', e);
       container.innerHTML = `
         <div class="online-error-state">
+          <div class="error-eye-frame">
+            <img src="/assets/maya/maya_eye.svg" alt="Error" width="60" height="35" style="opacity:0.4;">
+          </div>
           <h2 class="error-title">COULD NOT LOAD MOVIE DETAILS</h2>
-          <p class="error-desc">${e.message || 'An unexpected error occurred.'}</p>
+          <p class="error-desc">Unable to load this movie right now.</p>
           <a href="/browse" class="btn-retry-catalogue">&larr; BACK TO CATALOGUE</a>
         </div>
       `;

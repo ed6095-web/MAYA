@@ -176,7 +176,7 @@ export const SearchView = {
       }
 
       target.innerHTML = `
-        <div class="catalogue-grid-view">
+        <div class="catalogue-grid">
           ${movies.map(movie => this._renderResultCard(movie)).join('')}
         </div>
       `;
@@ -203,14 +203,14 @@ export const SearchView = {
 
   _renderResultCard(movie) {
     const movieId = movie.tmdb_id || movie.id;
-    const posterUrl = movie.poster || '/assets/maya/app_home.png';
+    const posterUrl = movie.posterUrl || movie.poster || '/assets/maya/placeholder_poster.jpg';
     const rating = typeof movie.rating === 'number' ? movie.rating.toFixed(1) : (movie.rating || '');
-    const year = movie.release_year || '';
+    const year = movie.releaseYear || movie.release_year || '';
 
     return `
       <article class="movie-card" data-movie-id="${movieId}" tabindex="0">
         <div class="card-poster-frame">
-          <img src="${posterUrl}" alt="MAYA poster for ${movie.title}" class="card-poster-img" loading="lazy">
+          <img src="${posterUrl}" alt="MAYA poster for ${movie.title}" class="card-poster-img" loading="lazy" onerror="this.onerror=null;this.src='/assets/maya/placeholder_poster.jpg';">
           ${rating ? `<span class="card-rating-badge">★ ${rating}</span>` : ''}
           <div class="card-hover-overlay">
             <div class="overlay-bottom">

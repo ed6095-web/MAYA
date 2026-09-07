@@ -21,7 +21,81 @@ const MOVIE_DETAILS_CACHE_KEY = 'maya_movie_details_cache_';
 const MASTER_POOL_CACHE_KEY = 'maya_master_movie_pool_v2';
 let masterPoolPromise = null;
 
+/**
+ * Standardizes raw movie data from any source into a consistent, robust model.
+ * Provides guaranteed fallback images, safe strings, array guarantees,
+ * and dual camelCase / snake_case properties to eliminate undefined errors.
+ */
+export function normalizeMovie(raw) {
+  if (!raw) return null;
+
+  const id = String(raw.tmdb_id || raw.id || '');
+  const tmdbId = raw.tmdb_id || raw.tmdbId || id;
+  const title = (raw.title && String(raw.title).trim()) || 'Untitled Cinema';
+  const description = (raw.description && String(raw.description).trim()) || (raw.synopsis && String(raw.synopsis).trim()) || 'No description available for this title.';
+
+  // Fallback for visual assets: backdrop falls back to poster; poster falls back to backdrop
+  const rawPoster = raw.posterUrl || raw.poster_url || raw.poster || '';
+  const rawBackdrop = raw.backdropUrl || raw.backdrop_url || raw.backdrop || '';
+
+  const posterUrl = rawPoster || rawBackdrop || '/assets/maya/placeholder_poster.jpg';
+  const backdropUrl = rawBackdrop || rawPoster || '/assets/maya/placeholder_poster.jpg';
+
+  const rating = typeof raw.rating === 'number' && !isNaN(raw.rating) && raw.rating > 0
+    ? Number(raw.rating.toFixed(1))
+    : (raw.rating && !isNaN(parseFloat(raw.rating)) ? Number(parseFloat(raw.rating).toFixed(1)) : null);
+
+  const releaseYear = raw.releaseYear || raw.release_year || (raw.year ? parseInt(raw.year, 10) : null);
+
+  const genres = Array.isArray(raw.genres)
+    ? raw.genres.filter(Boolean)
+    : (typeof raw.genres === 'string' ? raw.genres.split(',').map(g => g.trim()).filter(Boolean) : []);
+
+  const languages = Array.isArray(raw.languages)
+    ? raw.languages
+    : (raw.language ? [raw.language] : ['Original']);
+
+  const runtime = typeof raw.runtime === 'number' && raw.runtime > 0 ? raw.runtime : null;
+  const quality = raw.rip || raw.quality || 'HD';
+  const isAnime = Boolean(raw.is_anime || raw.isAnime);
+
+  return {
+    // Primary normalized fields
+    id,
+    tmdbId,
+    title,
+    description,
+    posterUrl,
+    backdropUrl,
+    rating,
+    releaseYear,
+    genres,
+    languages,
+    runtime,
+    quality,
+    isAnime,
+    updatedOn: raw.updated_on || raw.updatedOn || null,
+
+    // Backward-compatibility aliases so existing views never encounter undefined
+    tmdb_id: tmdbId,
+    poster: posterUrl,
+    backdrop: backdropUrl,
+    release_year: releaseYear,
+    rip: quality,
+    is_anime: isAnime,
+    updated_on: raw.updated_on || null,
+
+    // Streaming and source metadata
+    stream_url: raw.stream_url || null,
+    video_path: raw.video_path || null,
+    is_authorized_stream: Boolean(raw.is_authorized_stream),
+    playbackSources: Array.isArray(raw.playbackSources) ? raw.playbackSources : null,
+    telegram: Array.isArray(raw.telegram) ? raw.telegram : [],
+  };
+}
+
 export const CatalogueService = {
+  normalizeMovie,
   /**
    * Fetches and maintains a comprehensive master movie pool.
    * Handles upstream worker parameter limitations by performing reliable in-memory filtering.
@@ -83,17 +157,17 @@ export const CatalogueService = {
           const data = await resPrimary.json();
           totalCount = typeof data.total_count === 'number' ? data.total_count : totalCount;
           (data.movies || []).forEach(m => {
-            const key = String(m.tmdb_id || m.id);
-            movieMap.set(key, m);
+            const norm = normalizeMovie(m);
+            if (norm) movieMap.set(norm.id, norm);
           });
         }
 
         if (resRecent.ok) {
           const data = await resRecent.json();
           (data.movies || []).forEach(m => {
-            const key = String(m.tmdb_id || m.id);
-            if (!movieMap.has(key)) {
-              movieMap.set(key, m);
+            const norm = normalizeMovie(m);
+            if (norm && !movieMap.has(norm.id)) {
+              movieMap.set(norm.id, norm);
             }
           });
         }
@@ -156,9 +230,9 @@ export const CatalogueService = {
         if (currentPool && Array.isArray(data.movies)) {
           const movieMap = new Map(currentPool.data.map(m => [String(m.tmdb_id || m.id), m]));
           data.movies.forEach(m => {
-            const key = String(m.tmdb_id || m.id);
-            if (!movieMap.has(key)) {
-              movieMap.set(key, m);
+            const norm = normalizeMovie(m);
+            if (norm && !movieMap.has(norm.id)) {
+              movieMap.set(norm.id, norm);
             }
           });
           currentPool.data = Array.from(movieMap.values());
@@ -180,7 +254,7 @@ export const CatalogueService = {
     if (memoryCache.has(memKey)) {
       const cached = memoryCache.get(memKey);
       if (Date.now() - cached.timestamp < CONFIG.DETAILS_CACHE_TTL_MS) {
-        return cached.data;
+        return normalizeMovie(cached.data);
       }
     }
 
@@ -192,7 +266,7 @@ export const CatalogueService = {
           const parsed = JSON.parse(local);
           if (Date.now() - parsed.timestamp < CONFIG.DETAILS_CACHE_TTL_MS) {
             memoryCache.set(memKey, parsed);
-            return parsed.data;
+            return normalizeMovie(parsed.data);
           }
         }
       } catch {}
@@ -203,14 +277,15 @@ export const CatalogueService = {
       const poolResult = await this.getMasterPool();
       const found = poolResult.data.find(m => String(m.tmdb_id || m.id) === strId);
       if (found) {
-        const cacheItem = { data: found, timestamp: Date.now() };
+        const norm = normalizeMovie(found);
+        const cacheItem = { data: norm, timestamp: Date.now() };
         memoryCache.set(memKey, cacheItem);
         if (typeof localStorage !== 'undefined') {
           try {
             localStorage.setItem(`${MOVIE_DETAILS_CACHE_KEY}${strId}`, JSON.stringify(cacheItem));
           } catch {}
         }
-        return found;
+        return norm;
       }
     } catch (e) {
       console.warn('Error finding movie in pool:', e);
@@ -223,7 +298,7 @@ export const CatalogueService = {
         const data = await directRes.json();
         const found = (data.movies || []).find(m => String(m.tmdb_id || m.id) === strId);
         if (found) {
-          return found;
+          return normalizeMovie(found);
         }
       }
     } catch {}
